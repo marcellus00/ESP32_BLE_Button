@@ -16,7 +16,6 @@ BLECharacteristic *pCharacteristicData;
 BLECharacteristic *pCharacteristicButton;
 std::string _message;
 std::string _data = "<!DOCTYPE html><html><body><h1>BLE Button Admin Page</h1><p>Hello</p></body></html>";
-std::string _name = "BLE Button";
 
 class ServerReadCallbacks: public BLECharacteristicCallbacks
 {
@@ -33,12 +32,17 @@ void setup()
   Serial.println("Starting BLE work!");
 
   EEPROM.begin(EEPROM_SIZE);
-  String savedName = EEPROM.readString(0);
-  Serial.println("Name " + savedName);
-  if (savedName.length() > 0)
-    _name = savedName.c_str();
+  String deviceName = EEPROM.readString(0);
+  Serial.println("Name " + deviceName);
+  int nameLength = deviceName.length();
+  if(nameLength == 0 ||
+      nameLength == 1 &&
+        deviceName[0] == "0")        
+  {
+    deviceName = "BLE Button";
+  }
 
-  BLEDevice::init(_name);
+  BLEDevice::init(deviceName.c_str());
   BLEServer *pServer = BLEDevice::createServer();
   //pServer->setCallbacks(new EchoServerCallbacks());
 
