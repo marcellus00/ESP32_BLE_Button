@@ -9,6 +9,7 @@
 #define CHARATERISTIC_DATA_UUID "2e550f9f-c882-467a-b35a-c7f12ecae2b3"
 #define CHARATERISTIC_BUTTON_UUID "12cd634c-2911-45c5-8c46-3d67628a88fd"
 #define BUTTONPIN 25
+#define DELAY 250
 
 int _buttonPressed = LOW;
 bool _messageReceivedComplete = false;
@@ -36,8 +37,8 @@ void setup()
   Serial.println("Name " + deviceName);
   int nameLength = deviceName.length();
   if(nameLength == 0 ||
-      nameLength == 1 &&
-        deviceName[0] == "0")        
+      nameLength == 1 && 
+        deviceName == "0")
   {
     deviceName = "BLE Button";
   }
@@ -72,7 +73,7 @@ void setup()
 
 void loop()
 {
-  delay(1000);
+  delay(DELAY);
   int currentState = digitalRead(BUTTONPIN);
   if (_buttonPressed != currentState)
   {
@@ -91,6 +92,8 @@ void loop()
       {
         _message.erase(32, length - 32);
       }
+      if(_message == "0")
+        _message = "0 ";
       Serial.println("Rename");
       EEPROM.writeString( 0, _message.c_str() );
       EEPROM.commit();
